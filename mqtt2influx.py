@@ -16,8 +16,8 @@ INFLUX_PORT     = environ.get("INFLUX_PORT", 8086)
 INFLUX_DB       = environ.get("INFLUX_DB", 'sensors')
 INFLUX_USER     = environ.get("INFLUX_USER", 'root')
 INFLUX_PASS     = environ.get("INFLUX_USER", 'root')
-MQTT_SERVER     = environ.get("MQTT_SERVER", 'localhost')
-MQTT_PORT       = environ.get("MQTT_PORT", 31883)
+MQTT_SERVER     = environ.get("MQTT_SERVER", '192.168.1.15')
+MQTT_PORT       = environ.get("MQTT_PORT", 1883)
 MQTT_USER       = environ.get("MQTT_USER", 'mqtt_user')
 MQTT_PASS       = environ.get("MQTT_PASS", 'mqtt_password')
 
@@ -49,15 +49,20 @@ def on_connect(client, userdata, flags, rc):
 
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    for topic in MQTT_TOPICS:
-        client.subscribe(topic)
-        logging.debug("subscribed: " + str(topic))
-
+    if rc == 0:
+        for topic in MQTT_TOPICS:
+            client.subscribe(topic)
+            logging.debug("subscribed: " + str(topic))
+    else:
+        logging.error("NOT subscribed to topics")
 
 
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
+    logging.debug(str(client))
+    logging.debug(str(userdata))
+    logging.debug(str(msg))
     global ct_errors
     measurement = MQTT_TOPICS[msg.topic]
     payload = msg.payload.decode('utf8')
@@ -100,17 +105,21 @@ if __name__ == "__main__":
     d = {}
     config_file = "/config/topics.txt"
     if not path.isfile(config_file): config_file = "topics.txt"
-    logging.debug("checking for " + config_file + "...")
+    #logging.debug("checking for " + config_file + "...")
     if path.isfile(config_file):
         logging.info("loading "+config_file + "...")
         with open(config_file) as f:
             for line in f:
                 (key, val) = line.split()
-                logging.info (key + " : " + val)
+                key = key.replace("'", "").replace('"', '')
+                val = val.replace("'", "").replace('"', '')
+                logging.debug ("  > " +  key + " -> " + val)
                 d[key] = val
+    else:
+        logging.error ("Could not find config.txt, exiting...")
+        sys.exit(-1)
     if len(d) > 0:
         MQTT_TOPICS = d
-
 
     logging.info("connecting to influx (" + INFLUX_SERVER + ":" + str(INFLUX_PORT) + " db: " + INFLUX_DB + ") ...")
     influx_client = InfluxDBClient(INFLUX_SERVER, INFLUX_PORT, database=INFLUX_DB)
@@ -120,12 +129,12 @@ if __name__ == "__main__":
     except Exception as ex:
         logging.warning(ex)
 
-    logging.info("connecting to mqqt broker (" + MQTT_SERVER + ":" + str(MQTT_PORT)  + ") ...")
+    logging.info("connecting to mqqt broker (" + MQTT_SERVER + ":" + str(MQTT_PORT) + ") ...")
+    print(MQTT_PORT)
     mqtt_client = mqtt.Client()
     mqtt_client.on_connect = on_connect
     mqtt_client.on_message = on_message
 
     mqtt_client.connect(MQTT_SERVER, int(MQTT_PORT), 60)
     mqtt_client.username_pw_set(MQTT_USER, MQTT_PASS)
-
     mqtt_client.loop_forever()

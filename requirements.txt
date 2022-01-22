@@ -1,3 +1,5 @@
-paho-mqtt==1.5.1
-influxdb==5.3.1
+paho-mqtt
+influxdb
+python-dotenv
+
 
