@@ -1,0 +1,4 @@
+'plants/conservatory1/temp/state'                  'conservatory1_temp'
+'plants/conservatory1/baro/state'                  'conservatory1_baro'
+'plants/conservatory1/soil1/state'                 'conservatory1_soil1'
+'hottub/state'                                     'hottub'
