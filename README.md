@@ -4,7 +4,7 @@ This simple python app subscribes to topics on a MQTT Broker of your choice, and
 
 Environment variables such as server names, port, credentials etc can be configured in .env for convenience if running from the command line.
 
-A text file "topics.txt" holds a map of MQTT topics to subscribe to and the associated Influx measurement name:
+A text file "topics.txt" holds a map of MQTT topics to subscribe to and the associated Influx measurement name:<BR>
 *topics.txt*
 MY_TOPIC1 SHORT_NAME1
 MY_TOPIC2 SHORT_NAME2
