@@ -6,7 +6,7 @@ Environment variables such as server names, port, credentials etc can be configu
 
 A text file "topics.txt" holds a map of MQTT topics to subscribe to and the associated Influx measurement name:<BR><BR>
 *topics.txt*<BR>
-MY_TOPIC1 SHORT_NAME1
+MY_TOPIC1 SHORT_NAME1<BR>
 MY_TOPIC2 SHORT_NAME2
 
   
