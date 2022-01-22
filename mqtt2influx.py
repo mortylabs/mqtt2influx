@@ -8,6 +8,7 @@ from os import path, environ
 from dotenv import load_dotenv
 import json
 
+
 basedir = path.abspath(path.dirname(__file__))
 load_dotenv(path.join(basedir, '.env'))
 
@@ -60,12 +61,11 @@ def on_connect(client, userdata, flags, rc):
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
-    logging.debug(str(client))
-    logging.debug(str(userdata))
-    logging.debug(str(msg))
     global ct_errors
     measurement = MQTT_TOPICS[msg.topic]
     payload = msg.payload.decode('utf8')
+    logging.debug(payload)
+
     if payload.replace(".", "").isnumeric() : #payload_type is int or payload_type is float or payload_type is bool:
         influx_post(server=INFLUX_SERVER, port=INFLUX_PORT, db=INFLUX_DB, measurement=MQTT_TOPICS[msg.topic], tag1_value=None,value=float(payload), dt=None)
     else:
@@ -73,7 +73,7 @@ def on_message(client, userdata, msg):
         try:
             json_object = json.loads(payload, parse_float=float)
             for x in json_object:
-                if "mac" not in x.lower() and "rssi" not in x.lower():
+                if "mac" not in x.lower() and "rssi" not in x.lower() and "ip" not in x.lower():
                     influx_post(server=INFLUX_SERVER, port=INFLUX_PORT, db=INFLUX_DB,
                                   measurement=measurement + "_"+x, tag1_value=None, value=json_object[x], dt=None)
 
