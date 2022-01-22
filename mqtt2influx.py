@@ -102,10 +102,8 @@ if __name__ == "__main__":
     logging.info("starting...")
     logging.info("LOGGING_LEVEL = " + str(LOGGING_LEVEL))
 
-    d = {}
     config_file = "/config/topics.txt"
     if not path.isfile(config_file): config_file = "topics.txt"
-    #logging.debug("checking for " + config_file + "...")
     if path.isfile(config_file):
         logging.info("loading "+config_file + "...")
         with open(config_file) as f:
@@ -114,12 +112,10 @@ if __name__ == "__main__":
                 key = key.replace("'", "").replace('"', '')
                 val = val.replace("'", "").replace('"', '')
                 logging.debug ("  > " +  key + " -> " + val)
-                d[key] = val
+                MQTT_TOPICS[key] = val
     else:
         logging.error ("Could not find config.txt, exiting...")
         sys.exit(-1)
-    if len(d) > 0:
-        MQTT_TOPICS = d
 
     logging.info("connecting to influx (" + INFLUX_SERVER + ":" + str(INFLUX_PORT) + " db: " + INFLUX_DB + ") ...")
     influx_client = InfluxDBClient(INFLUX_SERVER, INFLUX_PORT, database=INFLUX_DB)
@@ -130,7 +126,6 @@ if __name__ == "__main__":
         logging.warning(ex)
 
     logging.info("connecting to mqqt broker (" + MQTT_SERVER + ":" + str(MQTT_PORT) + ") ...")
-    print(MQTT_PORT)
     mqtt_client = mqtt.Client()
     mqtt_client.on_connect = on_connect
     mqtt_client.on_message = on_message
