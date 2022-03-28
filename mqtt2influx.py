@@ -122,14 +122,18 @@ if __name__ == "__main__":
     try:
         logging.info("creating database if not exist...")
         influx_client.create_database(INFLUX_DB)
-    except Exception as ex:
-        logging.warning(ex)
+    except Exception as e:
+        logging.exception(e)
 
-    logging.info("connecting to mqqt broker (" + MQTT_SERVER + ":" + str(MQTT_PORT) + ") ...")
-    mqtt_client = mqtt.Client()
-    mqtt_client.on_connect = on_connect
-    mqtt_client.on_message = on_message
+    try:
+        logging.info("connecting to mqqt broker (" + MQTT_SERVER + ":" + str(MQTT_PORT) + ") ...")
+        mqtt_client = mqtt.Client()
+        mqtt_client.on_connect = on_connect
+        mqtt_client.on_message = on_message
 
-    mqtt_client.connect(MQTT_SERVER, int(MQTT_PORT), 60)
-    mqtt_client.username_pw_set(MQTT_USER, MQTT_PASS)
-    mqtt_client.loop_forever()
+        mqtt_client.connect(MQTT_SERVER, int(MQTT_PORT), 60)
+        mqtt_client.username_pw_set(MQTT_USER, MQTT_PASS)
+        logging.info("looping forever...")
+        mqtt_client.loop_forever()
+    except Exception as e:
+        logging.exception(e)
