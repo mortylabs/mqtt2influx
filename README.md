@@ -1,9 +1,7 @@
 # mqtt2influx
 
 > A lightweight Python tool (and companion Docker image) to bridge your MQTT sensor streams into InfluxDB for time-series analysis.  
-> Easily configured with a `.env` file and a topic map.
-> Run from the command line or docker/k3s. 
-> Ideal for self-hosted dashboards, IoT monitoring, and Grafana.
+
 
 
 [![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg)]()
